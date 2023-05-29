@@ -1,0 +1,10 @@
+.featured-items {
+    background-image: url('../../assets/home/featured.jpg');
+    background-repeat: no-repeat;
+    color: white;
+    background-color: gray;
+    background-blend-mode: multiply;
+    background-attachment: fixed;
+    z-index: -1;
+    background-size: cover;
+}
