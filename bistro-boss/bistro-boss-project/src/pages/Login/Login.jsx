@@ -1,13 +1,18 @@
-import { useEffect } from 'react';
+import { useContext, useEffect } from 'react';
 import { useRef } from 'react';
 import { useState } from 'react';
 import { loadCaptchaEnginge, LoadCanvasTemplate, validateCaptcha } from 'react-simple-captcha';
 import img from "../../assets/others/authentication1.png";
-import { BsFillArrowLeftCircleFill } from "react-icons/bs";
-import { Link } from 'react-router-dom';
+import { BsFillArrowLeftCircleFill, BsGoogle } from "react-icons/bs";
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { AuthContext } from '../../components/Provider/AuthProvider/AuthProvider';
 const Login = () => {
     const captchaRef = useRef(null);
-    const [disable, setDiasble] = useState(true)
+    const { signIn, googleSignIn } = useContext(AuthContext);
+    const [disable, setDiasble] = useState(true);
+    let location = useLocation();
+    let navigate = useNavigate();
+    let from = location.state?.from?.pathname || "/";
     useEffect(() => {
         loadCaptchaEnginge(6);
     }, [])
@@ -24,7 +29,18 @@ const Login = () => {
         const form = event.target;
         const email = form.email.value;
         const password = form.password.value;
-
+        signIn(email, password)
+            .then(result => {
+                const user = result.user;
+                console.log(user);
+                navigate(from, { replace: true })
+            })
+            .catch(error => alert(error.message));
+    }
+    const handleGoogle = () => {
+        googleSignIn()
+            .then()
+            .catch(error => alert(error.message))
     }
     return (
         <div className="hero min-h-screen bg-base-100 px-16">
@@ -54,10 +70,16 @@ const Login = () => {
                             </div>
 
                             <div className="form-control mt-6">
-                                <button className="btn btn-primary" disabled={disable}>Login</button>
+                                <input type="submit" value="Login" className="btn btn-primary" disabled={disable} />
                             </div>
                         </form>
+                        <div className="flex flex-col w-full border-opacity-50">
+                            <p>Does not hav an account?<Link to='/register' className=' text-blue-700 ' > Go to Registration</Link></p>
+                            <div className="divider">OR</div>
+                            <div className="btn btn-outline btn-accen h-12 card bg-base-300 rounded-box place-items-center" onClick={handleGoogle} ><BsGoogle ></BsGoogle></div>
+                        </div>
                         <button  ><Link to='/' className='flex items-center gap-2' ><BsFillArrowLeftCircleFill className='h-20 w-9'  ></BsFillArrowLeftCircleFill>Go back Home</Link></button>
+
                     </div>
                 </div>
             </div>

@@ -4,12 +4,13 @@ import Footer from "../shared/Footer/Footer";
 
 const Main = () => {
     const location = useLocation();
-    const prevLocation = location.pathname.match('login');
+    const logLocation = location.pathname.match("/login");
+    const regLocation = location.pathname.match("/register");
     return (
         <div>
-            {prevLocation ? "" : <Navbar></Navbar>}
+            {logLocation || regLocation ? "" : <Navbar></Navbar>}
             <Outlet></Outlet>
-            {prevLocation ? "" : <Footer></Footer>}
+            {regLocation || logLocation ? "" : <Footer></Footer>}
         </div>
     );
 };
