@@ -13,7 +13,7 @@ import { FaQuoteLeft } from "react-icons/fa";
 const Testimonial = () => {
     const [review, setReview] = useState([]);
     useEffect(() => {
-        fetch('reviews.json')
+        fetch('http://localhost:5000/review')
             .then(res => res.json())
             .then(data => setReview(data))
             .catch(error => alert(error.message))
@@ -21,7 +21,7 @@ const Testimonial = () => {
     return (
         <div className="py-24">
             <SectionTitle
-                subHeading="What our client say?"
+                subHeading={"What our client say?"}
                 heading={'Testimonials'}
             ></SectionTitle>
             <div className="mx-96" >

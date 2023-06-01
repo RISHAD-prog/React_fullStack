@@ -1,17 +1,62 @@
+import { Pagination } from "swiper";
+import FoodCard from "../../FoodCard/FoodCard";
+import "swiper/css";
+import "swiper/css/pagination";
+import { Swiper, SwiperSlide } from "swiper/react";
+import "./ShopTab.css";
+import { useState } from "react";
+import { useEffect } from "react";
 
 const ShopTab = ({ items }) => {
-    const { name, image, price, recipe } = items;
+    const [data, setData] = useState(items.slice(0, 6));
+    const [currentPage, setCurrentPage] = useState(0);
+    const itemsPerpage = 6;
+    const totalPage = Math.ceil(items.length / itemsPerpage);
+    const pageNumber = [...Array(totalPage).keys()];
+    useEffect(() => {
+        if (currentPage > 0) {
+            const skip = currentPage * itemsPerpage;
+            console.log(skip);
+            setData(items.slice(skip, skip + 6));
+        }
+    }, [currentPage, items])
+    const handlePageChange = (index) => {
+        setCurrentPage(index);
+        console.log(index);
+    };
+    const pagination = {
+        clickable: true,
+        renderBullet: function (index, className) {
+
+            return '<span class="' + className + '">' + (index + 1) + '</span>';
+
+        },
+    };
+
     return (
-        <div className="card card-compact w-96 bg-base-100 shadow-xl">
-            <figure><img src={image} alt="Shoes" /></figure>
-            <p>{price}</p>
-            <div className="card-body">
-                <h2 className="card-title">{name}</h2>
-                <p>{recipe}</p>
-                <div className="card-actions justify-end">
-                    <button className="btn btn-primary">Buy Now</button>
-                </div>
-            </div>
+        <div className="my-16">
+            <Swiper
+                pagination={pagination}
+                onSlideChange={(swiper) => handlePageChange(swiper.activeIndex)}
+                modules={[Pagination]}
+                className="mySwiper"
+            >
+                {
+                    pageNumber.map(number => <SwiperSlide key={number}  >
+                        <div className='grid md:grid-cols-3 gap-10'>
+                            {
+                                data.map(item =>
+                                    <FoodCard
+                                        key={item.key}
+                                        item={item}
+                                    ></FoodCard>
+                                )
+
+                            }
+                        </div>
+                    </SwiperSlide>)
+                }
+            </Swiper>
         </div>
     );
 };
