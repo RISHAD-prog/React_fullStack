@@ -14,6 +14,7 @@ const Navbar = () => {
                             <Link to="/menu" >Menu</Link>
                         </li>
                         <li><Link to="/shop/salad" >Our Shop</Link></li>
+                        <li><Link to="/login" >Login</Link></li>
                     </ul>
                 </div>
                 <div className="inline-block">
@@ -28,6 +29,7 @@ const Navbar = () => {
                         <Link to="/menu" >Menu</Link>
                     </li>
                     <li><Link to="/shop/salad" >Our Shop</Link></li>
+                    <li><Link to="/login" >Login</Link></li>
                 </ul>
             </div>
             <div className="navbar-end">

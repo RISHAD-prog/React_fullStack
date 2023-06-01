@@ -1,13 +1,15 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import Navbar from "../shared/Navbar/Navbar";
 import Footer from "../shared/Footer/Footer";
 
 const Main = () => {
+    const location = useLocation();
+    const prevLocation = location.pathname.match('login');
     return (
         <div>
-            <Navbar></Navbar>
+            {prevLocation ? "" : <Navbar></Navbar>}
             <Outlet></Outlet>
-            <Footer></Footer>
+            {prevLocation ? "" : <Footer></Footer>}
         </div>
     );
 };
