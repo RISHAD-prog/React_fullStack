@@ -8,7 +8,7 @@ import { useState } from "react";
 import { useEffect } from "react";
 
 const ShopTab = ({ items }) => {
-    const [data, setData] = useState(items.slice(0, 6));
+    const [data, setData] = useState([]);
     const [currentPage, setCurrentPage] = useState(0);
     const itemsPerpage = 6;
     const totalPage = Math.ceil(items.length / itemsPerpage);
@@ -19,6 +19,9 @@ const ShopTab = ({ items }) => {
             console.log(skip);
             setData(items.slice(skip, skip + 6));
         }
+        else {
+            setData(items.slice(0, 6));
+        }
     }, [currentPage, items])
     const handlePageChange = (index) => {
         setCurrentPage(index);
@@ -27,9 +30,7 @@ const ShopTab = ({ items }) => {
     const pagination = {
         clickable: true,
         renderBullet: function (index, className) {
-
             return '<span class="' + className + '">' + (index + 1) + '</span>';
-
         },
     };
 
@@ -51,7 +52,6 @@ const ShopTab = ({ items }) => {
                                         item={item}
                                     ></FoodCard>
                                 )
-
                             }
                         </div>
                     </SwiperSlide>)
