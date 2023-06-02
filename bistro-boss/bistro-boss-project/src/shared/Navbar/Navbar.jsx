@@ -41,7 +41,11 @@ const Navbar = () => {
             </div>
             <div className="navbar-end">
                 {
-                    user ? <div><button className="btn btn-outline btn-warning " onClick={handleLogout} >Logout</button></div> : <Link to="/login" className="btn btn-outline btn-warning" >Login</Link>
+                    user ? <div className="flex gap-2" > <div className="avatar online">
+                        <div className="w-12 h-12 rounded-full">
+                            <img src={user?.photoURL} className=" object-scale-down " />
+                        </div>
+                    </div> <button className="btn btn-outline btn-warning " onClick={handleLogout} >Logout</button></div> : <Link to="/login" className="btn btn-outline btn-warning" >Login</Link>
                 }
             </div>
         </div>

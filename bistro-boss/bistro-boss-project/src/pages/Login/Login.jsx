@@ -6,6 +6,7 @@ import img from "../../assets/others/authentication1.png";
 import { BsFillArrowLeftCircleFill, BsGoogle } from "react-icons/bs";
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../components/Provider/AuthProvider/AuthProvider';
+import Swal from 'sweetalert2';
 const Login = () => {
     const captchaRef = useRef(null);
     const { signIn, googleSignIn } = useContext(AuthContext);
@@ -32,7 +33,13 @@ const Login = () => {
         signIn(email, password)
             .then(result => {
                 const user = result.user;
-                console.log(user);
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'success',
+                    title: `${user?.email}has been logged in`,
+                    showConfirmButton: false,
+                    timer: 1500
+                })
                 navigate(from, { replace: true })
             })
             .catch(error => alert(error.message));

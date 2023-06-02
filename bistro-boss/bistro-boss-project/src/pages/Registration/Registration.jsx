@@ -1,21 +1,32 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import login_img from "../../assets/others/authentication2.png";
 import { useContext } from "react";
 import { AuthContext } from "../../components/Provider/AuthProvider/AuthProvider";
 import { BsGoogle } from "react-icons/bs";
+import { useForm } from "react-hook-form";
+import Swal from "sweetalert2";
 const Registration = () => {
-    const { createUser, googleSignIn } = useContext(AuthContext)
-    const handleRegister = event => {
-        event.preventDefault();
-        const form = event.target;
-        const name = form.name.value;
-        const email = form.email.value;
-        const password = form.password.value;
-        console.log(name, email, password)
-        createUser(email, password)
+    const { createUser, googleSignIn, updateUserProfile } = useContext(AuthContext);
+    const { register, handleSubmit, reset, formState: { errors } } = useForm();
+    const navigate = useNavigate();
+    const onSubmit = data => {
+        console.log(data);
+        createUser(data.email, data.password)
             .then(result => {
                 const user = result.user;
-                console.log(user);
+                updateUserProfile(data.name, data.photoUrl)
+                    .then(() => {
+                        reset();
+                        Swal.fire({
+                            position: 'top-end',
+                            icon: 'success',
+                            title: `${user?.displayName}has been Added`,
+                            showConfirmButton: false,
+                            timer: 1500
+                        })
+                    })
+                navigate('/');
+
             })
             .catch(error => console.log(error));
     }
@@ -32,27 +43,38 @@ const Registration = () => {
                 </div>
                 <div className="card flex-shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
                     <div className="card-body">
-                        <form onSubmit={handleRegister}>
+                        <form onSubmit={handleSubmit(onSubmit)}>
                             <div className="form-control">
                                 <h1 className="text-5xl font-bold">Registration </h1>
                                 <label className="label">
                                     <span className="label-text">Name</span>
                                 </label>
-                                <input type="text" placeholder="name" name="name" className="input input-bordered" />
+                                <input type="text" {...register("name", { required: true, minLength: 7, maxLength: 20 })} placeholder="name" name="name" className="input input-bordered" />
+                                {errors.name?.type === 'required' && <span className=" text-red-500 " >Name field is required</span>}
+                            </div>
+                            <div className="form-control">
+                                <label className="label">
+                                    <span className="label-text">PhotoUrl</span>
+                                </label>
+                                <input type="text" {...register("photoUrl", { required: true })} placeholder="Give the URL" className="input input-bordered" />
+                                {errors.photoUrl?.type === 'required' && <span className=" text-red-500 " >PhotoURL field is required</span>}
                             </div>
                             <div className="form-control">
                                 <label className="label">
                                     <span className="label-text">Email</span>
                                 </label>
-                                <input type="email" placeholder="email" name="email" className="input input-bordered" />
-
+                                <input type="email" {...register("email", { required: true })} placeholder="email" name="email" className="input input-bordered" />
+                                {errors.email?.type === 'required' && <span className=" text-red-500 " >Email field is required</span>}
                             </div>
                             <div className="form-control">
                                 <label className="label">
                                     <span className="label-text">Password</span>
                                 </label>
-                                <input type="text" placeholder="password" name="password" className="input input-bordered" />
-
+                                <input type="text" {...register("password", { required: true, minLength: 6, maxLength: 20, pattern: /(?=.*[A-Z])(?=.*[@$!%*?&])(?=.*[0-9])(?=.*[a-z])/ })} placeholder="password" name="password" className="input input-bordered" />
+                                {errors.password?.type === 'required' && <span className=" text-red-500 " >Password field is required</span>}
+                                {errors.password?.type === 'minLength' && <span className=" text-red-500 " >Password must have 6 characters</span>}
+                                {errors.password?.type === 'maxLength' && <span className=" text-red-500 " >Password must be less than 20 characters</span>}
+                                {errors.password?.type === 'pattern' && <span className=" text-red-500 " >Password must have at least one uppercase letter, one lowercase letter, one number and one special character</span>}
                             </div>
                             <div className="form-control mt-6">
                                 <input type="submit" className="btn btn-primary" value="Register" />
