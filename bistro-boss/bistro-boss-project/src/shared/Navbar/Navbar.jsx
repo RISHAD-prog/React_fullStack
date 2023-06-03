@@ -12,6 +12,7 @@ const Navbar = () => {
     }
     const [cart] = useCart();
     console.log(cart.length);
+    console.log([cart]);
     return (
         <div className="navbar fixed z-10 bg-opacity-30 text-white bg-black max-w-screen-xl">
             <div className="navbar-start">
@@ -25,7 +26,7 @@ const Navbar = () => {
                             <Link to="/menu" >Menu</Link>
                         </li>
                         <li><Link to="/shop/salad" >Our Shop</Link></li>
-                        <li><Link to="/addtoCart" > <button className="btn">
+                        <li><Link to="/dashboard/myCart" > <button className="btn">
                             <BsCartPlusFill></BsCartPlusFill>
                             <div className="badge badge-secondary">+{cart?.length || 0}</div>
                         </button> </Link></li>
@@ -43,7 +44,7 @@ const Navbar = () => {
                         <Link to="/menu" >Menu</Link>
                     </li>
                     <li><Link to="/shop/salad" >Our Shop</Link></li>
-                    <li><Link to="/addtoCart" > <button className="btn btn-outline btn-error">
+                    <li><Link to="/dashboard/myCart" > <button className="btn btn-outline btn-error">
                         <BsCartPlusFill className="w-4 h-4 mr-1 " ></BsCartPlusFill>
                         <div className=" badge badge-error">+{cart?.length || 0}</div>
                     </button> </Link></li>
