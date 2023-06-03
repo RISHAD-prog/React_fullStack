@@ -9,6 +9,21 @@ const Registration = () => {
     const { createUser, googleSignIn, updateUserProfile } = useContext(AuthContext);
     const { register, handleSubmit, reset, formState: { errors } } = useForm();
     const navigate = useNavigate();
+    const addUser = (name, email, image) => {
+        const userData = { name: name, email: email, image: image };
+        fetch('http://localhost:5000/users', {
+            method: 'POST',
+            headers: {
+                'content-type': 'application/json',
+            },
+            body: JSON.stringify(userData)
+        })
+            .then(res => res.json())
+            .then(() => {
+
+            })
+            .catch(error => alert(error.message))
+    }
     const onSubmit = data => {
         console.log(data);
         createUser(data.email, data.password)
@@ -16,11 +31,12 @@ const Registration = () => {
                 const user = result.user;
                 updateUserProfile(data.name, data.photoUrl)
                     .then(() => {
+                        addUser(data.name, data.email, data.photoUrl);
                         reset();
                         Swal.fire({
                             position: 'top-end',
                             icon: 'success',
-                            title: `${user?.displayName}has been Added`,
+                            title: `Welcome!!!${user?.displayName}`,
                             showConfirmButton: false,
                             timer: 1500
                         })
@@ -28,12 +44,29 @@ const Registration = () => {
                 navigate('/');
 
             })
-            .catch(error => console.log(error));
+            .catch(error => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: `${error.message}. try use new email and name`
+                })
+            });
     }
     const handleGoogle = () => {
         googleSignIn()
-            .then()
-            .catch(error => alert(error.message))
+            .then((result) => {
+                const user = result.user;
+                addUser(user.displayName, user.email, user.photoURL);
+                navigate('/');
+            })
+            .catch(error => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: `${error.message}. try use new email and name`
+
+                })
+            })
     }
     return (
         <div className="hero min-h-screen bg-base-100">
