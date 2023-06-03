@@ -26,6 +26,17 @@ async function run() {
         const MenuDB = client.db("Bistro-BossDB").collection("menu");
         const ReviewDB = client.db("Bistro-BossDB").collection("reviews");
         const addCartDB = client.db("Bistro-BossDB").collection("carts");
+        const UserDB = client.db("Bistro-BossDB").collection("user");
+        app.post("/users", async (req, res) => {
+            const user = req.body;
+            const query = { email: user?.email, name: user?.name };
+            const existingUser = await UserDB.findOne(query);
+            if (existingUser) {
+                return res.send("user is already there");
+            }
+            const result = await UserDB.insertOne(user);
+            return res.send(result);
+        })
         app.get("/menu", async (req, res) => {
             const result = await MenuDB.find().toArray();
             res.send(result);
@@ -49,6 +60,12 @@ async function run() {
             const result = await addCartDB.find(query).toArray();
             res.send(result);
         });
+        app.delete("/cart/:id", async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const result = await addCartDB.deleteOne(query);
+            res.send(result);
+        })
         await client.db("admin").command({ ping: 1 });
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
     } finally {
