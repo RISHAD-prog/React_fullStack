@@ -46,7 +46,17 @@ const Login = () => {
     }
     const handleGoogle = () => {
         googleSignIn()
-            .then()
+            .then(result => {
+                const user = result.user;
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'success',
+                    title: `${user?.displayName}has been logged in`,
+                    showConfirmButton: false,
+                    timer: 1500
+                })
+                navigate(from, { replace: true })
+            })
             .catch(error => alert(error.message))
     }
     return (
