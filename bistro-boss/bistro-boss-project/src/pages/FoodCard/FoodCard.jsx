@@ -13,7 +13,7 @@ const FoodCard = ({ item }) => {
     const handleCart = () => {
         const cartItem = { itemId: _id, name, image, price, recipe, email: user?.email }
         if (user) {
-            fetch('http://localhost:5000/cart', {
+            fetch('http://localhost:5000/carts', {
                 method: 'POST',
                 headers: {
                     'content-type': 'application/json',

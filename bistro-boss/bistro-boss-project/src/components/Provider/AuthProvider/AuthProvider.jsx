@@ -42,12 +42,12 @@ const AuthProvider = ({ children }) => {
                     .then(data => {
                         console.log(data.data.token);
                         localStorage.setItem('bistro-boss-access-token', data.data.token);
+                        setLoading(false);
                     })
             }
             else {
                 localStorage.removeItem('bistro-boss-access-token');
             }
-            setLoading(false);
         })
         return () => {
             return unsubscribe();

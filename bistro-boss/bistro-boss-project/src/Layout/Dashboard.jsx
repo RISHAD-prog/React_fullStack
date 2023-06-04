@@ -3,9 +3,11 @@ import { NavLink, Outlet } from "react-router-dom";
 import { BsFillBagFill, BsMenuButtonWide, BsMenuUp } from "react-icons/bs";
 import { TiContacts } from "react-icons/ti";
 import useCart from "../hooks/useCart";
+import useAdmin from "../hooks/useAdmin";
 const Dashboard = () => {
     const [cart] = useCart();
-    const isAdmin = true; //todo: make admin from db;
+    const [isAdmin] = useAdmin();
+    console.log([isAdmin]);
     return (
         <div className="drawer drawer-mobile">
             <input id="my-drawer-2" type="checkbox" className="drawer-toggle" />

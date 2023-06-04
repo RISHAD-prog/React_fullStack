@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import { AuthContext } from "../../components/Provider/AuthProvider/AuthProvider";
 import { BsCartPlusFill } from "react-icons/bs";
 import useCart from "../../hooks/useCart";
+import useAdmin from "../../hooks/useAdmin";
+import { FaUsers } from "react-icons/fa";
 const Navbar = () => {
     const { user, logOut } = useContext(AuthContext);
     const handleLogout = () => {
@@ -11,6 +13,8 @@ const Navbar = () => {
             .catch(error => alert(error.message))
     }
     const [cart] = useCart();
+    const [isAdmin] = useAdmin();
+    console.log([isAdmin]);
     console.log(cart.length);
     console.log([cart]);
     return (
@@ -44,10 +48,15 @@ const Navbar = () => {
                         <Link to="/menu" >Menu</Link>
                     </li>
                     <li><Link to="/shop/salad" >Our Shop</Link></li>
-                    <li><Link to="/dashboard/myCart" > <button className="btn btn-outline btn-error">
-                        <BsCartPlusFill className="w-4 h-4 mr-1 " ></BsCartPlusFill>
-                        <div className=" badge badge-error">+{cart?.length || 0}</div>
-                    </button> </Link></li>
+                    {
+                        isAdmin ? <li><Link to="/dashboard/allUser" > <button className="btn btn-outline btn-error">
+                            <FaUsers className="w-4 h-4 mr-1 " ></FaUsers>
+                            <div className=" badge badge-error">Dashboard</div>
+                        </button> </Link></li> : <li><Link to="/dashboard/myCart" > <button className="btn btn-outline btn-error">
+                            <BsCartPlusFill className="w-4 h-4 mr-1 " ></BsCartPlusFill>
+                            <div className=" badge badge-error">+{cart?.length || 0}</div>
+                        </button> </Link></li>
+                    }
                 </ul>
             </div>
             <div className="navbar-end">

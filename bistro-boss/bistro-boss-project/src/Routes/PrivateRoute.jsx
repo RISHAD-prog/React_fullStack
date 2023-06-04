@@ -8,7 +8,7 @@ const PrivateRoute = ({ children }) => {
     if (loading) {
         <div className="radial-progress text-primary" style={{ "--value": 70 }}>70%</div>
     }
-    else if (user) {
+    if (user) {
         return children;
     }
     return <Navigate to="/login" state={{ from: location }} replace ></Navigate>
