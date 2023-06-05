@@ -42,12 +42,21 @@ async function run() {
         const ReviewDB = client.db("Bistro-BossDB").collection("reviews");
         const addCartDB = client.db("Bistro-BossDB").collection("carts");
         const UserDB = client.db("Bistro-BossDB").collection("user");
+        const verifyAdmin = async (req, res, next) => {
+            const email = req.decoded.email;
+            const query = { email: email }
+            const user = await UserDB.findOne(query);
+            if (user?.role !== 'admin') {
+                return res.status(403).send({ error: true, message: 'forbidden message' });
+            }
+            next();
+        }
         app.post('/jwt', (req, res) => {
             const user = req.body;
             const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' });
             res.send({ token });
         })
-        app.get("/users", verifyJWT, async (req, res) => {
+        app.get("/users", verifyJWT, verifyAdmin, async (req, res) => {
             const result = await UserDB.find().toArray();
             res.send(result);
         })
@@ -60,6 +69,12 @@ async function run() {
             }
             const result = await UserDB.insertOne(user);
             return res.send(result);
+        });
+        app.delete("/users/:id", async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const result = await UserDB.deleteOne(query);
+            res.send(result);
         })
         app.patch("/users/admin/:id", async (req, res) => {
             const id = req.params.id;
@@ -89,6 +104,11 @@ async function run() {
             const result = await MenuDB.find().toArray();
             res.send(result);
         });
+        app.post('/menu', verifyJWT, verifyAdmin, async (req, res) => {
+            const items = req.body;
+            const result = await MenuDB.insertOne(items);
+            res.send(result);
+        })
         app.get("/review", async (req, res) => {
             const result = await ReviewDB.find().toArray();
             res.send(result);
