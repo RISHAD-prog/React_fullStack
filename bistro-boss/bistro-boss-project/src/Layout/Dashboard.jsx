@@ -13,7 +13,6 @@ const Dashboard = () => {
             <input id="my-drawer-2" type="checkbox" className="drawer-toggle" />
             <div className="drawer-content flex flex-col items-center justify-center">
                 <Outlet></Outlet>
-
             </div>
             <div className="drawer-side">
                 <label htmlFor="my-drawer-2" className="drawer-overlay"></label>
@@ -26,7 +25,7 @@ const Dashboard = () => {
                         isAdmin ?
                             <>
                                 <li><NavLink to="/dashboard/admin/home" > <FaHome className=" w-8 h-8" ></FaHome> Admin Home</NavLink></li>
-                                <li><NavLink to="/dashboard/admin/addItems" > <FaUtensils className=" w-8 h-8" ></FaUtensils> Add Items</NavLink></li>
+                                <li><NavLink to="/dashboard/addItem" > <FaUtensils className=" w-8 h-8" ></FaUtensils> Add Items</NavLink></li>
                                 <li><NavLink to="/dashboard/admin/menu" > <BsMenuUp className=" w-8 h-8"></BsMenuUp  > Manage Items</NavLink></li>
                                 <li><NavLink to="/dashboard/admin/bookings" > <div className="flex items-center" ><FaBook className=" w-8 h-8"></FaBook><div className="badge badge-secondary"> +0</div></div> Manage Bookings</NavLink></li>
                                 <li><NavLink to="/dashboard/allUsers" > <FaUsers className=" w-8 h-8"></FaUsers> All Users</NavLink></li>

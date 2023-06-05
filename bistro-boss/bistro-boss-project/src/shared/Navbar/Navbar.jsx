@@ -49,7 +49,7 @@ const Navbar = () => {
                     </li>
                     <li><Link to="/shop/salad" >Our Shop</Link></li>
                     {
-                        isAdmin ? <li><Link to="/dashboard/allUser" > <button className="btn btn-outline btn-error">
+                        isAdmin ? <li><Link to="/dashboard/allUsers" > <button className="btn btn-outline btn-error">
                             <FaUsers className="w-4 h-4 mr-1 " ></FaUsers>
                             <div className=" badge badge-error">Dashboard</div>
                         </button> </Link></li> : <li><Link to="/dashboard/myCart" > <button className="btn btn-outline btn-error">
