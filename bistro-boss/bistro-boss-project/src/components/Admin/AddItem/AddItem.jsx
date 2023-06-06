@@ -40,14 +40,13 @@ const AddItem = () => {
                 }
             })
     }
-    console.log(Image_Hosting_Token);
     return (
         <div>
             <Helmet>
                 <title>Bistro Boss | All users</title>
             </Helmet>
             <SectionTitle
-                heading={"Add an Item"}
+                heading={"--Add an Item--"}
                 subHeading={"What's new?"}
             ></SectionTitle>
             <div >

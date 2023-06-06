@@ -38,7 +38,7 @@ const AuthProvider = ({ children }) => {
             setUser(currentUser);
             console.log('current user', currentUser);
             if (currentUser) {
-                axios.post('http://localhost:5000/jwt', { email: currentUser?.email })
+                axios.post('http://localhost:5000/jwt', { email: currentUser.email })
                     .then(data => {
                         console.log(data.data.token);
                         localStorage.setItem('bistro-boss-access-token', data.data.token);

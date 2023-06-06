@@ -11,7 +11,7 @@ const Dashboard = () => {
     return (
         <div className="drawer drawer-mobile">
             <input id="my-drawer-2" type="checkbox" className="drawer-toggle" />
-            <div className="drawer-content flex flex-col items-center justify-center">
+            <div className="drawer-content  flex">
                 <Outlet></Outlet>
             </div>
             <div className="drawer-side">
@@ -26,7 +26,7 @@ const Dashboard = () => {
                             <>
                                 <li><NavLink to="/dashboard/admin/home" > <FaHome className=" w-8 h-8" ></FaHome> Admin Home</NavLink></li>
                                 <li><NavLink to="/dashboard/addItem" > <FaUtensils className=" w-8 h-8" ></FaUtensils> Add Items</NavLink></li>
-                                <li><NavLink to="/dashboard/admin/menu" > <BsMenuUp className=" w-8 h-8"></BsMenuUp  > Manage Items</NavLink></li>
+                                <li><NavLink to="/dashboard/manageItem" > <BsMenuUp className=" w-8 h-8"></BsMenuUp  > Manage Items</NavLink></li>
                                 <li><NavLink to="/dashboard/admin/bookings" > <div className="flex items-center" ><FaBook className=" w-8 h-8"></FaBook><div className="badge badge-secondary"> +0</div></div> Manage Bookings</NavLink></li>
                                 <li><NavLink to="/dashboard/allUsers" > <FaUsers className=" w-8 h-8"></FaUsers> All Users</NavLink></li>
                             </>
@@ -34,7 +34,7 @@ const Dashboard = () => {
                             <>
                                 <li><NavLink to="/dashboard/userHome" > <FaHome className=" w-8 h-8" ></FaHome> User Home</NavLink></li>
                                 <li><NavLink to="/dashboard/reservation" > <FaCalendarAlt className=" w-8 h-8" ></FaCalendarAlt> Reservation</NavLink></li>
-                                <li><NavLink to="/dashboard/payment" > <FaWallet className=" w-8 h-8"></FaWallet  > Payment History</NavLink></li>
+                                <li><NavLink to="/dashboard/paymentHistory" > <FaWallet className=" w-8 h-8"></FaWallet  > Payment History</NavLink></li>
                                 <li><NavLink to="/dashboard/myCart" > <div className="flex items-center" ><FaCartPlus className=" w-8 h-8"></FaCartPlus><div className="badge badge-secondary">+{cart?.length || 0}</div></div> My Cart</NavLink></li>
                                 <li><NavLink to="/dashboard/myBookings" > <FaCalendarDay className=" w-8 h-8"></FaCalendarDay> My Bookings</NavLink></li>
                             </>
