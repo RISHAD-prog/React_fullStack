@@ -24,7 +24,7 @@ const Testimonial = () => {
                 subHeading={"What our client say?"}
                 heading={'Testimonials'}
             ></SectionTitle>
-            <div className="mx-96" >
+            <div className=" mx-64" >
                 <FaQuoteLeft className="mx-48 w-28 h-80" ></FaQuoteLeft>
             </div>
             <Swiper

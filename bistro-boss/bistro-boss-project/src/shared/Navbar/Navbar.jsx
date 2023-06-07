@@ -4,7 +4,7 @@ import { AuthContext } from "../../components/Provider/AuthProvider/AuthProvider
 import { BsCartPlusFill } from "react-icons/bs";
 import useCart from "../../hooks/useCart";
 import useAdmin from "../../hooks/useAdmin";
-import { FaUsers } from "react-icons/fa";
+import { RxDashboard } from "react-icons/rx";
 const Navbar = () => {
     const { user, logOut } = useContext(AuthContext);
     const handleLogout = () => {
@@ -37,7 +37,7 @@ const Navbar = () => {
                     </ul>
                 </div>
                 <div className="inline-block">
-                    <button className=" text-2xl font-bold">Bistro Boss</button>
+                    <h1 className=" text-2xl font-bold">Bistro Boss</h1>
                     <p className="text-xl" >RESTAURANT</p>
                 </div>
             </div>
@@ -48,15 +48,12 @@ const Navbar = () => {
                         <Link to="/menu" >Menu</Link>
                     </li>
                     <li><Link to="/shop/salad" >Our Shop</Link></li>
-                    {
-                        isAdmin ? <li><Link to="/dashboard/allUsers" > <button className="btn btn-outline btn-error">
-                            <FaUsers className="w-4 h-4 mr-1 " ></FaUsers>
-                            <div className=" badge badge-error">Dashboard</div>
-                        </button> </Link></li> : <li><Link to="/dashboard/myCart" > <button className="btn btn-outline btn-error">
-                            <BsCartPlusFill className="w-4 h-4 mr-1 " ></BsCartPlusFill>
-                            <div className=" badge badge-error">+{cart?.length || 0}</div>
-                        </button> </Link></li>
-                    }
+
+                    <li><button className="btn btn-outline btn-error h-6 "><Link to={isAdmin ? "/dashboard/allUsers" : "/dashboard/myCart"} className="flex items-center" >
+                        <RxDashboard className="" ></RxDashboard>
+                        <div className=" badge badge-error">Dashboard</div>
+                    </Link></button></li>
+
                 </ul>
             </div>
             <div className="navbar-end">

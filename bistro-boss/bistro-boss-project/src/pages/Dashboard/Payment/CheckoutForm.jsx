@@ -4,28 +4,32 @@ import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import { useEffect } from "react";
 import Swal from "sweetalert2";
 import useAuth from "../../../hooks/useAuth";
-
-const CheckoutForm = ({ price }) => {
+import "./CheckoutForm.css";
+const CheckoutForm = ({ cart, price }) => {
     const stripe = useStripe();
     const { user } = useAuth();
     const elements = useElements();
     const [cardError, setCardError] = useState('');
     const [axiosSecure] = useAxiosSecure();
     const [clientSecrect, setClientsecrect] = useState('');
-    console.log(clientSecrect);
+    const [processing, setProcessing] = useState(false);
+    const [transactionId, setTransactionId] = useState('');
     useEffect(() => {
-        axiosSecure.get('/create-payment-intent', { price })
-            .then((res) => {
-                setClientsecrect(res.data.clientSecret);
-            }).catch((error) => {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: error.message,
+        if (price > 0) {
+            axiosSecure.post('/create-payment-intent', { price })
+                .then((res) => {
+                    setClientsecrect(res.data.clientSecret);
+                }).catch((error) => {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: error.message,
 
+                    })
                 })
-            })
+        }
     }, [price, axiosSecure])
+    console.log(clientSecrect);
     const handleSubmit = async (event) => {
         event.preventDefault();
 
@@ -54,6 +58,7 @@ const CheckoutForm = ({ price }) => {
             console.log('[PaymentMethod]', paymentMethod);
             setCardError(' ');
         }
+        setProcessing(true);
         const { paymentIntent, error: confirmedError } = await stripe.confirmCardPayment(
             clientSecrect,
             {
@@ -69,8 +74,38 @@ const CheckoutForm = ({ price }) => {
         if (confirmedError) {
             console.log(confirmedError);
         }
-        console.log(paymentIntent);
+        setProcessing(false);
+        console.log("[paymentIntent]", paymentIntent);
+
+        if (paymentIntent.status === "succeeded") {
+            setTransactionId(paymentIntent.id);
+            const items = {
+                email: user?.email,
+                name: user?.displayName,
+                currency: paymentIntent.currency,
+                price,
+                transactionId: paymentIntent.id,
+                cartItems: cart.map(item => item._id),
+                menuItems: cart.map(item => item.itemId),
+                status: 'service pending',
+                itemNames: cart.map(item => item.name),
+                date: new Date(),
+                quantity: cart.length,
+            }
+            axiosSecure.post('/payment', items)
+                .then(res => {
+                    console.log(res.data);
+                    if (res.data.insertItem.insertedId) {
+                        Swal.fire(
+                            'Good job!',
+                            'Your Transaction has completed!',
+                            'success'
+                        )
+                    }
+                })
+        }
     }
+
     return (
         <div>
             <p className="text-4xl ms-96 mb-3" >Payment</p>
@@ -92,11 +127,12 @@ const CheckoutForm = ({ price }) => {
                         },
                     }}
                 />
-                <button className="btn btn-outline btn-primary mt-2 w-24 ms-96" type="submit" disabled={!stripe && !clientSecrect}>
+                <button className="btn btn-outline btn-primary mt-2 w-24 ms-96" type="submit" disabled={!stripe || !clientSecrect || processing}>
                     Pay
                 </button>
             </form>
             {cardError && <p className="text-red-600" >{cardError}</p>}
+            {transactionId && <p className="text-green-500">Transaction complete with transactionId: {transactionId}</p>}
         </div>
     );
 };

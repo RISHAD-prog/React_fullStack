@@ -54,7 +54,7 @@ const MyCart = () => {
             <div className="overflow-x-auto">
                 <div className="flex justify-between items-center uppercase" >
                     <h1 className="font-bold text-2xl" >Total Orders:{cart?.length}</h1>
-                    <h2 className="font-bold text-2xl" >Total Price: ${sum}</h2>
+                    <h2 className="font-bold text-2xl" >Total Price: ${parseFloat(sum).toFixed(2)}</h2>
                     <button className="btn btn-outline btn-primary  rounded mb-2" > <Link to="/dashboard/payment" >Pay</Link> </button>
                 </div>
                 <table className="table ">
