@@ -3,7 +3,7 @@ const app = express();
 const cors = require('cors');
 require('dotenv').config();
 const jwt = require('jsonwebtoken');
-const stripe = require('strip')(process.env.PAYMENT_SECRECT_KEY);
+const stripe = require('stripe')(process.env.PAYMENT_SECRECT_KEY);
 const port = process.env.PORT || 5000;
 // middleware
 app.use(cors());
@@ -41,8 +41,10 @@ async function run() {
         await client.connect();
         const MenuDB = client.db("Bistro-BossDB").collection("menu");
         const ReviewDB = client.db("Bistro-BossDB").collection("reviews");
-        const addCartDB = client.db("Bistro-BossDB").collection("carts");
+        const cartDB = client.db("Bistro-BossDB").collection("carts");
         const UserDB = client.db("Bistro-BossDB").collection("user");
+        const paymentDB = client.db("Bistro-BossDB").collection("payments");
+
         const verifyAdmin = async (req, res, next) => {
             const email = req.decoded.email;
             const query = { email: email }
@@ -52,6 +54,7 @@ async function run() {
             }
             next();
         }
+
         app.post('/jwt', (req, res) => {
             const user = req.body;
             const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' });
@@ -121,7 +124,7 @@ async function run() {
         });
         app.post("/carts", async (req, res) => {
             const cartData = req.body;
-            const result = await addCartDB.insertOne(cartData);
+            const result = await cartDB.insertOne(cartData);
             res.send(result);
         });
         app.get("/carts", verifyJWT, async (req, res) => {
@@ -135,27 +138,99 @@ async function run() {
                 return res.status(403).send({ error: true, message: 'forbidden access' })
             }
             const query = { email: userEmail };
-            const result = await addCartDB.find(query).toArray();
+            const result = await cartDB.find(query).toArray();
             res.send(result);
         });
         app.delete("/carts/:id", async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) };
-            const result = await addCartDB.deleteOne(query);
+            const result = await cartDB.deleteOne(query);
             res.send(result);
         });
-        app.post("/create-payment-intent", async (req, res) => {
+        app.post("/create-payment-intent", verifyJWT, async (req, res) => {
             const { price } = req.body;
+            const amount = parseInt(price * 100);
             const paymentIntent = await stripe.paymentIntents.create({
-                price: price * 100,
-                currency: "usd",
-                payment_method_types:
-                    ['card']
+                amount: amount,
+                currency: 'usd',
+                payment_method_types: ['card']
             });
+
             res.send({
-                clientSecret: paymentIntent.client_secret,
-            });
+                clientSecret: paymentIntent.client_secret
+            })
+        });
+        app.post("/payment", verifyJWT, async (req, res) => {
+            const paymentDetail = req.body;
+            const insertItem = await paymentDB.insertOne(paymentDetail);
+            const query = { _id: { $in: paymentDetail.cartItems.map(id => new ObjectId(id)) } };
+            const deleteCartItem = await cartDB.deleteMany(query);
+            res.send({ insertItem, deleteCartItem });
+        });
+        app.get('/admin-stats', verifyJWT, verifyAdmin, async (req, res) => {
+            const users = await UserDB.estimatedDocumentCount();
+            const products = await MenuDB.estimatedDocumentCount();
+            const query = { status: "pending" };
+            const orders = await paymentDB.countDocuments(query);
+            const revenue = await paymentDB.aggregate([{ $group: { _id: null, total: { $sum: '$price' } } }]).toArray();
+            res.send({
+                users,
+                products,
+                orders,
+                revenue
+            })
         })
+
+        app.get('/order-stats', verifyJWT, verifyAdmin, async (req, res) => {
+            const pipeline = [
+                {
+                    $unwind: '$menuItems'
+                },
+                {
+                    $lookup: {
+                        from: 'menu',
+                        let: { menuItemId: { $toObjectId: '$menuItems' } },
+                        pipeline: [
+                            {
+                                $match: {
+                                    $expr: { $eq: ['$_id', '$$menuItemId'] }
+                                }
+                            },
+                            {
+                                $project: {
+                                    _id: 0,
+                                    category: 1,
+                                    price: 1
+                                }
+                            }
+                        ],
+                        as: 'menuItemsData'
+                    }
+                },
+                {
+                    $unwind: '$menuItemsData'
+                },
+                {
+                    $group: {
+                        _id: '$menuItemsData.category',
+                        count: { $sum: 1 },
+                        total: { $sum: '$menuItemsData.price' }
+                    }
+                },
+                {
+                    $project: {
+                        category: '$_id',
+                        count: 1,
+                        total: { $round: ['$total', 2] },
+                        _id: 0
+                    }
+                }
+            ];
+            const result = await paymentDB.aggregate(pipeline).toArray();
+            res.send(result);
+        })
+
+
         await client.db("admin").command({ ping: 1 });
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
     } finally {
